@@ -1,0 +1,378 @@
+.posts-page {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 16px 60px;
+}
+
+
+.posts-header {
+  text-align: center;
+  margin-bottom: 30px;
+  position: relative;
+}
+
+.posts-header h1 {
+  font-size: 2rem;
+  margin-bottom: 6px;
+}
+
+.posts-subtitle {
+  color: #ffffff;
+  margin-bottom: 8px;
+}
+
+.live-badge {
+  display: inline-block;
+  background: #e74c3c;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: 20px;
+  padding: 3px 10px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.5; }
+}
+
+
+/* ── 3. ФОРМА НОВОГО ПОСТА ───────────────────────────────────────────
+   Карточка с синей рамкой, которая разворачивается по клику.         */
+.new-post-card {
+  background: #fff;
+  border: 2px solid #4a90d9;
+  border-radius: 14px;
+  margin-bottom: 28px;
+  overflow: hidden;          /* скрывает форму, пока она свёрнута */
+}
+
+/* Заголовок карточки — кликабельная строка «Написать пост».
+   justify-content: space-between раздвигает текст и стрелку.         */
+.new-post-toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  cursor: pointer;
+  font-weight: 600;
+  color: #4a90d9;
+  user-select: none;         /* запрещает выделение текста при клике  */
+}
+
+.new-post-toggle:hover {
+  background: #f0f6ff;
+}
+
+/* Стрелка ▼ поворачивается на 180° через JS-класс .open              */
+.toggle-arrow {
+  transition: transform 0.2s;
+}
+
+.toggle-arrow.open {
+  transform: rotate(180deg);
+}
+
+/* Тело формы: колонка с отступами между полями                       */
+.post-form {
+  padding: 0 18px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.post-form input[type="text"],
+.post-form textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.post-form input[type="text"] {
+  font-size: 1rem;
+}
+
+/* Счётчики символов под полями (мелкие серые, выровнены вправо)      */
+.title-counter,
+.content-counter {
+  font-size: 0.78rem;
+  color: #aaa;
+  text-align: right;
+}
+
+/* Нижняя строка формы: сообщение об ошибке слева, кнопка справа      */
+.post-form-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Кнопка «Опубликовать»                                               */
+.btn-post-submit {
+  background: #4a90d9;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 9px 24px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: background 0.2s;
+}
+
+.btn-post-submit:hover    { background: #357abd; }
+.btn-post-submit:disabled { background: #aaa; cursor: default; }
+
+/* Текст ошибки под формой                                             */
+.form-error {
+  color: #dc3545;
+  font-size: 0.88rem;
+}
+
+
+/* ── 4. БЛОК «ВОЙДИТЕ» ДЛЯ НЕАВТОРИЗОВАННЫХ ─────────────────────────
+   Показывается вместо формы, если пользователь не залогинен.         */
+.login-notice {
+  background: #f0f4ff;
+  border: 1px solid #c8d8f8;
+  border-radius: 12px;
+  padding: 14px 18px;
+  color: #555;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.login-notice a {
+  color: #4a90d9;
+  font-weight: 600;
+}
+
+
+/* ── 5. ЛЕНТА ПОСТОВ ─────────────────────────────────────────────────
+   Flex-колонка с зазором между карточками.                           */
+.posts-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Placeholder-сообщения, пока посты грузятся или их нет              */
+.posts-loading {
+  text-align: center;
+  color: #ffffff;
+  padding: 40px 0;
+}
+
+.no-posts {
+  text-align: center;
+  color: #ffffff;
+  font-style: italic;
+  padding: 40px 0;
+}
+
+
+/* ── 6. КАРТОЧКА ПОСТА ───────────────────────────────────────────────
+   Белый блок с тенью; анимация slideIn при появлении в ленте.        */
+.post-card {
+  background: #fff;
+  border: 1px solid #e4e8f0;
+  border-radius: 14px;
+  padding: 20px;
+  animation: slideIn 0.35s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+/* Карточка выезжает сверху и плавно появляется                       */
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Мета-строка: имя автора + дата, мелким шрифтом                     */
+.post-card-header {
+  margin-bottom: 10px;
+}
+
+.post-meta {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  font-size: 0.85rem;
+}
+
+.post-author { font-weight: 700; color: #333; }
+.post-date   { color: #aaa; }
+
+/* Заголовок поста                                                     */
+.post-card h2.post-title {
+  font-size: 1.25rem;
+  margin: 0 0 10px;
+  color: #222;
+}
+
+/* Текст поста: pre-wrap сохраняет переносы строк, введённые автором  */
+.post-content {
+  font-size: 0.95rem;
+  color: #444;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+
+/* ── 7. КНОПКИ ДЕЙСТВИЙ (лайк / дизлайк / комментарии) ──────────────
+   Располагаются в строку под текстом поста, отделены горизонтальной
+   чертой.                                                             */
+.post-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid #f0f0f0;
+  flex-wrap: wrap;           /* на узких экранах переносятся           */
+}
+
+.post-actions button {
+  border: 2px solid #e0e0e0;
+  background: #fafafa;
+  border-radius: 20px;
+  padding: 6px 16px;
+  cursor: pointer;
+  font-size: 0.88rem;
+  transition: all 0.15s;
+}
+
+.post-actions button:hover {
+  border-color: #aaa;
+  background: #f5f5f5;
+}
+
+/* Активное состояние лайка (зелёная рамка и фон)                     */
+.btn-post-like.active-like {
+  background: #d4edda;
+  border-color: #28a745;
+}
+
+/* Активное состояние дизлайка (красная рамка и фон)                  */
+.btn-post-dislike.active-dislike {
+  background: #f8d7da;
+  border-color: #dc3545;
+}
+
+/* Кнопка комментариев подсвечивается синим, когда секция открыта     */
+.btn-toggle-comments.open {
+  background: #e8f0fe;
+  border-color: #4a90d9;
+}
+
+
+/* ── 8. СЕКЦИЯ КОММЕНТАРИЕВ ──────────────────────────────────────────
+   Раскрывается под постом при клике на кнопку «💬 N комментариев».   */
+.comments-area {
+  margin-top: 16px;
+  border-top: 1px solid #f0f0f0;
+  padding-top: 14px;
+}
+
+/* Список существующих комментариев                                    */
+.comments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+/* Один комментарий — светло-серая карточка с анимацией появления     */
+.comment-item {
+  background: #f9fafc;
+  border: 1px solid #eef;
+  border-radius: 8px;
+  padding: 10px 12px;
+  animation: fadeIn 0.25s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Строка с именем автора и датой                                      */
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.82rem;
+  margin-bottom: 4px;
+}
+
+.comment-username { font-weight: 700; color: #333; }
+.comment-date     { color: #bbb; }
+
+/* Текст комментария                                                   */
+.comment-text {
+  font-size: 0.92rem;
+  color: #444;
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+
+/* Сообщение, когда комментариев ещё нет                               */
+.no-comments-yet {
+  color: #aaa;
+  font-size: 0.88rem;
+  font-style: italic;
+}
+
+
+/* ── 9. ФОРМА ДОБАВЛЕНИЯ КОММЕНТАРИЯ ────────────────────────────────
+   Текстовое поле + строка с счётчиком и кнопкой «Отправить».        */
+.add-comment-area {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.comment-input {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 0.92rem;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+/* Строка под полем: счётчик символов слева, кнопка справа            */
+.comment-area-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.comment-char-counter {
+  font-size: 0.78rem;
+  color: #bbb;
+}
+
+.btn-send-comment {
+  background: #4a90d9;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 7px 18px;
+  cursor: pointer;
+  font-size: 0.88rem;
+  transition: background 0.2s;
+}
+
+.btn-send-comment:hover    { background: #357abd; }
+.btn-send-comment:disabled { background: #aaa; }
+
+/* Сообщение об ошибке под формой комментария                         */
+.comment-error {
+  color: #dc3545;
+  font-size: 0.83rem;
+}

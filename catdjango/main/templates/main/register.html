@@ -1,0 +1,47 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Регистрация{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+  <div class="auth-box">
+    <h1>Регистрация</h1>
+    <form method="post" novalidate class="django-form">
+      {% csrf_token %}
+      {% for field in form %}
+        <div class="form-group">
+          <label for="{{ field.id_for_label }}">
+            {{ field.label }}
+            {% if field.field.required %}<span class="required-mark">*</span>{% endif %}
+          </label>
+          {% if field.name == 'username' %}
+            <input type="text" name="username" placeholder="Имя пользователя" required value="{{ field.value|default_if_none:'' }}">
+          {% elif field.name == 'first_name' %}
+            <input type="text" name="first_name" placeholder="Иван" required value="{{ field.value|default_if_none:'' }}">
+          {% elif field.name == 'last_name' %}
+            <input type="text" name="last_name" placeholder="Иванов" required value="{{ field.value|default_if_none:'' }}">
+          {% elif field.name == 'email' %}
+            <input type="email" name="email" placeholder="ivan@example.com" required value="{{ field.value|default_if_none:'' }}">
+          {% elif field.name == 'favourite_cat' %}
+            <input type="text" name="favourite_cat" placeholder="Бенгальская" value="{{ field.value|default_if_none:'' }}">
+          {% elif field.name == 'password1' %}
+            <input type="password" name="password1" placeholder="Пример: qwerty123" required>
+          {% elif field.name == 'password2' %}
+            <input type="password" name="password2" placeholder="Повторите пароль" required>
+          {% else %}
+            {{ field }}
+          {% endif %}
+          {% if field.help_text %}
+            <div class="field-help">{{ field.help_text }}</div>
+          {% endif %}
+          {% if field.errors %}
+            <div class="field-error">{{ field.errors.0 }}</div>
+          {% endif %}
+        </div>
+      {% endfor %}
+      <button type="submit" class="btn-submit">Зарегистрироваться</button>
+    </form>
+    <p class="auth-link">Уже есть аккаунт? <a href="{% url 'login' %}">Войдите</a></p>
+  </div>
+</div>
+{% endblock %}

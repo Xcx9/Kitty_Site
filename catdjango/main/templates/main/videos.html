@@ -1,0 +1,32 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}Смешные видео{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Смешные и забавные видео с котиками</h1>
+
+<div class="videos-grid">
+  <div class="video-card">
+    <video controls>
+      <source src="{% static 'main/videos/v-basseyne.mp4' %}" type="video/mp4">
+    </video>
+  </div>
+  <div class="video-card">
+    <video controls>
+      <source src="{% static 'main/videos/kot-nyrnut.mp4' %}" type="video/mp4">
+    </video>
+    <p>Кот нырнут</p>
+  </div>
+  <div class="video-card">
+    <video controls>
+      <source src="{% static 'main/videos/kot-fotomodel.mp4' %}" type="video/mp4">
+    </video>
+  </div>
+  <div class="video-card">
+    <video controls>
+      <source src="{% static 'main/videos/Funny_vid1.mp4' %}" type="video/mp4">
+    </video>
+  </div>
+</div>
+{% endblock %}

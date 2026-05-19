@@ -1,0 +1,31 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Вход{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+  <div class="auth-box">
+    <h1>Вход</h1>
+    <form method="post" novalidate class="django-form">
+      {% csrf_token %}
+      {% for field in form %}
+        <div class="form-group">
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {% if field.name == 'username' %}
+            <input type="text" name="username" placeholder="Имя пользователя" required value="{{ field.value|default_if_none:'' }}">
+          {% elif field.name == 'password' %}
+            <input type="password" name="password" placeholder="Пример: qwerty123" required>
+          {% else %}
+            {{ field }}
+          {% endif %}
+          {% if field.errors %}
+            <div class="field-error">{{ field.errors.0 }}</div>
+          {% endif %}
+        </div>
+      {% endfor %}
+      <button type="submit" class="btn-submit">Войти</button>
+    </form>
+    <p class="auth-link">Нет аккаунта? <a href="{% url 'register' %}">Зарегистрируйтесь</a></p>
+  </div>
+</div>
+{% endblock %}

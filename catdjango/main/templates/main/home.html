@@ -1,0 +1,30 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}Главная — Сайт о кошках{% endblock %}
+
+{% block content %}
+<div class="hero">
+  <h1>Многие любят кошек — этот сайт про них!</h1>
+  <p><strong>Здесь много всякого разного.</strong> Например, можно посмотреть на разные породы кошек, а также посмотреть смешные видео с котами.</p>
+  <img src="{% static 'main/smiling_cat.jpg' %}" alt="Улыбающийся кот" class="hero-img">
+</div>
+
+<div class="cards">
+  <a href="{% url 'breeds' %}" class="card">
+    <div class="card-icon">🐈</div>
+    <h3>Породы кошек</h3>
+    <p>Узнайте о разных породах кошек</p>
+  </a>
+  <a href="{% url 'videos' %}" class="card">
+    <div class="card-icon">🎬</div>
+    <h3>Смешные видео</h3>
+    <p>Посмотрите видео с котиками</p>
+  </a>
+  <a href="{% url 'feedback' %}" class="card">
+    <div class="card-icon">✉️</div>
+    <h3>Обратная связь</h3>
+    <p>Напишите нам</p>
+  </a>
+</div>
+{% endblock %}

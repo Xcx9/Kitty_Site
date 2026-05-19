@@ -1,0 +1,342 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}Сообщество — КотоСайт{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'main/posts.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="posts-page">
+
+  <div class="posts-header">
+    <h1>🐾 Сообщество <span id="live-badge" title="WebSocket-соединение активно" style="font-size:0.45em;vertical-align:middle;background:#22c55e;color:#fff;border-radius:9px;padding:2px 10px;opacity:0.3;transition:opacity .5s;">● Live</span></h1>
+    <p class="posts-subtitle">Делитесь мыслями о кошках — посты обновляются в реальном времени</p>
+  </div>
+
+  {% if user.is_authenticated %}
+  <div class="new-post-card" id="new-post-card">
+    <div class="new-post-toggle" id="new-post-toggle">
+      <span>✏️ Написать пост</span>
+      <span class="toggle-arrow" id="toggle-arrow">▼</span>
+    </div>
+    <form id="post-form" class="post-form" style="display:none;">
+      {% csrf_token %}
+      <input type="text" id="post-title" placeholder="Заголовок поста..." maxlength="200" required />
+      <div class="title-counter"><span id="title-counter">0</span>/200</div>
+      <textarea id="post-content" placeholder="Что хотите рассказать о кошках?..." maxlength="2000" rows="5" required></textarea>
+      <div class="content-counter"><span id="content-counter">0</span>/2000</div>
+      <div class="post-form-footer">
+        <p id="post-error" class="form-error" style="display:none;"></p>
+        <button type="submit" class="btn-post-submit">Опубликовать</button>
+      </div>
+    </form>
+  </div>
+  {% else %}
+  <div class="login-notice">
+    <a href="{% url 'login' %}">Войдите</a> или <a href="{% url 'register' %}">зарегистрируйтесь</a>, чтобы публиковать посты и оставлять комментарии.
+  </div>
+  {% endif %}
+
+  <div id="posts-feed" class="posts-feed">
+    <div class="posts-loading">Загрузка постов...</div>
+  </div>
+</div>
+
+<!-- Шаблон: карточка поста -->
+<template id="tpl-post">
+  <article class="post-card" data-post-id="">
+    <div class="post-card-header">
+      <div class="post-meta">
+        <span class="post-author"></span>
+        <span class="post-date"></span>
+      </div>
+    </div>
+    <h2 class="post-title"></h2>
+    <div class="post-content"></div>
+    <div class="post-actions">
+      <button class="btn-post-like" data-value="1">👍 <span class="post-likes">0</span></button>
+      <button class="btn-post-dislike" data-value="-1">👎 <span class="post-dislikes">0</span></button>
+      <button class="btn-toggle-comments">💬 <span class="post-comments-count">0</span> комментариев</button>
+    </div>
+    <div class="comments-area" style="display:none;">
+      <div class="comments-list"></div>
+      <div class="add-comment-area">
+        <textarea class="comment-input" placeholder="Напишите комментарий..." maxlength="1000" rows="2"></textarea>
+        <div class="comment-area-footer">
+          <span class="comment-char-counter">0/1000</span>
+          <button class="btn-send-comment">Отправить</button>
+        </div>
+        <p class="comment-error" style="display:none;"></p>
+      </div>
+    </div>
+  </article>
+</template>
+
+<!-- Шаблон: один комментарий -->
+<template id="tpl-comment">
+  <div class="comment-item">
+    <div class="comment-header">
+      <span class="comment-username"></span>
+      <span class="comment-date"></span>
+    </div>
+    <div class="comment-text"></div>
+  </div>
+</template>
+
+
+<script>
+(function () {
+  const IS_AUTH = {{ user.is_authenticated|yesno:"true,false" }};
+
+  // ── WebSocket: подключение ─────────────────────────────────────────────────
+  const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
+  let ws;
+
+  function wsConnect() {
+    ws = new WebSocket(`${proto}//${location.host}/ws/posts/`);
+
+    ws.onopen = () => {
+      const badge = document.getElementById('live-badge');
+      if (badge) badge.style.opacity = '1';
+    };
+
+    ws.onclose = () => {
+      const badge = document.getElementById('live-badge');
+      if (badge) badge.style.opacity = '0.3';
+      // Переподключение через 3 секунды при разрыве
+      setTimeout(wsConnect, 3000);
+    };
+
+    ws.onerror = () => {
+      ws.close();
+    };
+
+    ws.onmessage = (event) => {
+      const msg = JSON.parse(event.data);
+      switch (msg.type) {
+        case 'initial':      handleInitial(msg.posts);      break;
+        case 'new_post':     handleNewPost(msg.post);       break;
+        case 'like_update':  handleLikeUpdate(msg.update);  break;
+        case 'new_comment':  handleNewComment(msg.result);  break;
+        case 'comments':     handleComments(msg.post_id, msg.comments); break;
+        case 'error':        handleWsError(msg.message);    break;
+      }
+    };
+  }
+
+  // ── Отправка действий серверу ──────────────────────────────────────────────
+  function wsSend(data) {
+    if (ws && ws.readyState === WebSocket.OPEN) {
+      ws.send(JSON.stringify(data));
+    }
+  }
+
+  // ── Утилиты ───────────────────────────────────────────────────────────────
+  function showErr(el, msg) { el.textContent = msg; el.style.display = 'block'; }
+
+  // ── Форма нового поста ─────────────────────────────────────────────────────
+  const toggle     = document.getElementById('new-post-toggle');
+  const arrow      = document.getElementById('toggle-arrow');
+  const form       = document.getElementById('post-form');
+  const titleInput = document.getElementById('post-title');
+  const contentInput = document.getElementById('post-content');
+  const titleCnt   = document.getElementById('title-counter');
+  const contentCnt = document.getElementById('content-counter');
+  const postErr    = document.getElementById('post-error');
+
+  if (toggle) {
+    toggle.addEventListener('click', () => {
+      const open = form.style.display === 'block';
+      form.style.display = open ? 'none' : 'block';
+      arrow.classList.toggle('open', !open);
+    });
+    titleInput.addEventListener('input', () => { titleCnt.textContent = titleInput.value.length; });
+    contentInput.addEventListener('input', () => { contentCnt.textContent = contentInput.value.length; });
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      postErr.style.display = 'none';
+      const title   = titleInput.value.trim();
+      const content = contentInput.value.trim();
+      if (!title || !content) { showErr(postErr, 'Заполните заголовок и текст.'); return; }
+
+      // Отправляем через WebSocket — ответ придёт через onmessage (new_post)
+      wsSend({ action: 'create_post', title, content });
+
+      titleInput.value = ''; contentInput.value = '';
+      titleCnt.textContent = '0'; contentCnt.textContent = '0';
+      form.style.display = 'none';
+      arrow.classList.remove('open');
+    });
+  }
+
+  // ── DOM-элементы ленты и шаблонов ─────────────────────────────────────────
+  const feed    = document.getElementById('posts-feed');
+  const tplPost = document.getElementById('tpl-post');
+  const tplCmt  = document.getElementById('tpl-comment');
+
+  // postState[id] = { commentsOpen: bool }
+  const postState = {};
+
+  // ── Построение карточки поста ──────────────────────────────────────────────
+  function buildPostEl(p) {
+    const el = tplPost.content.cloneNode(true).querySelector('.post-card');
+    el.dataset.postId = p.id;
+    el.querySelector('.post-author').textContent  = p.author;
+    el.querySelector('.post-date').textContent    = p.created_at;
+    el.querySelector('.post-title').textContent   = p.title;
+    el.querySelector('.post-content').textContent = p.content;
+    applyPostCounts(el, p);
+    bindPostEl(el);
+    return el;
+  }
+
+  function applyPostCounts(el, p) {
+    el.querySelector('.post-likes').textContent           = p.likes;
+    el.querySelector('.post-dislikes').textContent        = p.dislikes;
+    el.querySelector('.post-comments-count').textContent  = p.comments_count;
+    el.querySelector('.btn-post-like').classList.toggle('active-like',      p.user_vote === 1);
+    el.querySelector('.btn-post-dislike').classList.toggle('active-dislike', p.user_vote === -1);
+  }
+
+  function buildCommentEl(c) {
+    const el = tplCmt.content.cloneNode(true).querySelector('.comment-item');
+    el.querySelector('.comment-username').textContent = c.username;
+    el.querySelector('.comment-date').textContent     = c.created_at;
+    el.querySelector('.comment-text').textContent     = c.text;
+    return el;
+  }
+
+  // ── Навешивание обработчиков на карточку ──────────────────────────────────
+  function bindPostEl(card) {
+    const postId  = parseInt(card.dataset.postId);
+    const likeBtn = card.querySelector('.btn-post-like');
+    const disBtn  = card.querySelector('.btn-post-dislike');
+    const cmtBtn  = card.querySelector('.btn-toggle-comments');
+    const cmtArea = card.querySelector('.comments-area');
+    const cmtList = card.querySelector('.comments-list');
+    const sendBtn = card.querySelector('.btn-send-comment');
+    const inp     = card.querySelector('.comment-input');
+    const charCnt = card.querySelector('.comment-char-counter');
+    const cmtErr  = card.querySelector('.comment-error');
+
+    postState[postId] = { commentsOpen: false };
+
+    // Лайк / дизлайк — отправляем через WebSocket
+    likeBtn.addEventListener('click', () => {
+      if (!IS_AUTH) { alert('Войдите, чтобы ставить оценки.'); return; }
+      wsSend({ action: 'toggle_like', post_id: postId, value: 1 });
+    });
+    disBtn.addEventListener('click', () => {
+      if (!IS_AUTH) { alert('Войдите, чтобы ставить оценки.'); return; }
+      wsSend({ action: 'toggle_like', post_id: postId, value: -1 });
+    });
+
+    // Счётчик символов комментария
+    inp.addEventListener('input', () => {
+      charCnt.textContent = inp.value.length + '/1000';
+    });
+
+    // Открытие / закрытие секции комментариев
+    cmtBtn.addEventListener('click', () => {
+      const open = cmtArea.style.display === 'block';
+      cmtArea.style.display = open ? 'none' : 'block';
+      cmtBtn.classList.toggle('open', !open);
+      postState[postId].commentsOpen = !open;
+
+      if (!open) {
+        // Запрашиваем комментарии через WebSocket
+        wsSend({ action: 'get_comments', post_id: postId });
+      }
+    });
+
+    // Отправка комментария через WebSocket
+    if (sendBtn) {
+      sendBtn.addEventListener('click', () => {
+        cmtErr.style.display = 'none';
+        const text = inp.value.trim();
+        if (!IS_AUTH) { alert('Войдите, чтобы комментировать.'); return; }
+        if (!text) { showErr(cmtErr, 'Введите текст.'); return; }
+        wsSend({ action: 'add_comment', post_id: postId, text });
+        inp.value = '';
+        charCnt.textContent = '0/1000';
+      });
+    }
+  }
+
+  // ── Обработчики входящих WebSocket-сообщений ──────────────────────────────
+
+  // Первоначальная загрузка всех постов при подключении
+  function handleInitial(posts) {
+    feed.innerHTML = '';
+    if (posts.length === 0) {
+      feed.innerHTML = '<p class="no-posts">Постов пока нет. Будьте первым! ✍️</p>';
+      return;
+    }
+    posts.forEach(p => feed.appendChild(buildPostEl(p)));
+  }
+
+  // Новый пост от любого пользователя — добавляем в начало ленты
+  function handleNewPost(p) {
+    const noEl = feed.querySelector('.no-posts');
+    if (noEl) noEl.remove();
+    if (document.querySelector(`[data-post-id="${p.id}"]`)) return;
+    feed.prepend(buildPostEl(p));
+  }
+
+  // Обновление счётчиков лайков
+  function handleLikeUpdate(u) {
+    const card = document.querySelector(`[data-post-id="${u.post_id}"]`);
+    if (!card) return;
+    card.querySelector('.post-likes').textContent    = u.likes;
+    card.querySelector('.post-dislikes').textContent = u.dislikes;
+    // user_vote !== null — значит это ответ на наш собственный клик
+    if (u.user_vote !== null) {
+      card.querySelector('.btn-post-like').classList.toggle('active-like',      u.user_vote === 1);
+      card.querySelector('.btn-post-dislike').classList.toggle('active-dislike', u.user_vote === -1);
+    }
+  }
+
+  // Новый комментарий — добавляем в открытую секцию нужного поста
+  function handleNewComment(r) {
+    const card = document.querySelector(`[data-post-id="${r.post_id}"]`);
+    if (!card) return;
+    card.querySelector('.post-comments-count').textContent = r.comments_count;
+    card.querySelector('.btn-toggle-comments .post-comments-count').textContent = r.comments_count;
+
+    const cmtArea = card.querySelector('.comments-area');
+    if (cmtArea.style.display === 'block') {
+      const cmtList = card.querySelector('.comments-list');
+      const noEl    = cmtList.querySelector('.no-comments-yet');
+      if (noEl) noEl.remove();
+      cmtList.appendChild(buildCommentEl(r.comment));
+    }
+  }
+
+  // Список комментариев, полученных по запросу get_comments
+  function handleComments(postId, comments) {
+    const card = document.querySelector(`[data-post-id="${postId}"]`);
+    if (!card) return;
+    const cmtList = card.querySelector('.comments-list');
+    cmtList.innerHTML = '';
+    if (comments.length === 0) {
+      cmtList.innerHTML = '<p class="no-comments-yet">Комментариев пока нет.</p>';
+      return;
+    }
+    comments.forEach(c => cmtList.appendChild(buildCommentEl(c)));
+  }
+
+  // Ошибка от сервера
+  function handleWsError(message) {
+    if (postErr) showErr(postErr, message);
+    else alert(message);
+  }
+
+  // ── Запуск ────────────────────────────────────────────────────────────────
+  wsConnect();
+
+})();
+</script>
+{% endblock %}

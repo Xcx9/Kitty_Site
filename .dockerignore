@@ -1,0 +1,43 @@
+# Git
+.git
+.gitignore
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+
+# Virtual envs
+venv/
+env/
+.venv/
+
+# Django
+*.sqlite3
+db.sqlite3
+catdjango/staticfiles/
+catdjango/media/
+
+# Tests / coverage
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Secrets
+.env
+*.env
+
+# Editors / OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Node / pnpm (monorepo root)
+node_modules/
+artifacts/
+lib/
+scripts/

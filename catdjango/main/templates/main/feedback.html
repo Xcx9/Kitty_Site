@@ -1,0 +1,29 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Обратная связь{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+  <div class="auth-box feedback-box">
+    <h1>Обратная связь</h1>
+    <p class="subtitle">Напишите нам — мы ответим как можно скорее!</p>
+
+    <form method="post" novalidate class="django-form">
+      {% csrf_token %}
+      {% for field in form %}
+        <div class="form-group">
+          <label for="{{ field.id_for_label }}">
+            {{ field.label }}
+            {% if field.field.required %}<span class="required-mark">*</span>{% endif %}
+          </label>
+          {{ field }}
+          {% if field.errors %}
+            <div class="field-error">{{ field.errors.0 }}</div>
+          {% endif %}
+        </div>
+      {% endfor %}
+      <button type="submit" class="btn-submit">Отправить сообщение</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

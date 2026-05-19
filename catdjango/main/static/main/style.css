@@ -1,0 +1,485 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
+  background-color: #47c8ff;
+  min-height: 100vh;
+}
+
+.navbar {
+  background-color: #333;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.nav-brand {
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 5px;
+  flex: 1;
+}
+
+.nav-links a {
+  color: #ccc;
+  text-decoration: none;
+  padding: 7px 14px;
+  border-radius: 5px;
+  transition: background 0.2s, color 0.2s;
+  font-size: 14px;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+  background-color: #555;
+  color: white;
+}
+
+.nav-auth {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+
+.nav-username {
+  color: #aef;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.btn-login, .btn-register, .btn-logout {
+  padding: 7px 14px;
+  border-radius: 5px;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+.btn-login { background: #555; color: white; }
+.btn-login:hover { background: #666; }
+.btn-register { background: #47c8ff; color: white; }
+.btn-register:hover { background: #2ba8d9; }
+.btn-logout { background: #ff4444; color: white; }
+.btn-logout:hover { background: #cc0000; }
+
+.content {
+  padding-top: 80px;
+  padding-bottom: 40px;
+}
+
+.messages {
+  max-width: 700px;
+  margin: 15px auto;
+  padding: 0 20px;
+}
+
+.alert {
+  padding: 12px 16px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+.alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+
+.hero {
+  text-align: center;
+  padding: 40px 20px 20px;
+}
+
+.hero h1 {
+  color: white;
+  font-size: 2em;
+  margin-bottom: 15px;
+  font-family: Cambria, Georgia, serif;
+}
+
+.hero p {
+  color: white;
+  font-size: 1.1em;
+  margin-bottom: 25px;
+}
+
+.hero-img {
+  max-width: 500px;
+  width: 90%;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.cards {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  padding: 30px 20px;
+  flex-wrap: wrap;
+}
+
+.card {
+  background: white;
+  border-radius: 10px;
+  padding: 30px 25px;
+  text-align: center;
+  text-decoration: none;
+  color: #333;
+  width: 200px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.card-icon { font-size: 2.5em; margin-bottom: 10px; }
+.card h3 { margin-bottom: 8px; font-size: 1em; }
+.card p { font-size: 0.85em; color: #666; }
+
+.page-title {
+  text-align: center;
+  color: white;
+  font-size: 2em;
+  padding: 20px;
+  font-family: Cambria, Georgia, serif;
+}
+
+.breeds-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  padding: 10px 20px 40px;
+}
+
+.breed-card {
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  width: 280px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+.breed-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.breed-card h3 {
+  padding: 12px 15px 5px;
+  color: #333;
+}
+
+.breed-card p {
+  padding: 0 15px 15px;
+  color: #666;
+  font-size: 0.9em;
+}
+
+.cat-gallery {
+  display: flex;
+  flex-wrap: wrap;       
+  gap: 20px;           
+  justify-content: center; 
+  margin: 30px 0;
+}
+
+.cat-gallery img {
+  width: 200px;         
+  height: auto;         
+  border-radius: 10px;   
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  transition: transform 0.2s;
+}
+
+.cat-gallery img:hover {
+  transform: scale(1.05); 
+}
+
+.videos-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  padding: 10px 20px 40px;
+}
+
+.video-card {
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.video-card video {
+  max-width: 400px;
+  width: 100%;
+  display: block;
+}
+
+.video-card p {
+  padding: 10px;
+  color: #555;
+  font-size: 0.9em;
+}
+
+.about-container {
+  max-width: 80%;
+  margin: 30px auto;
+  background: white;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+.about-container h1 {
+  color: #333;
+  margin-bottom: 20px;
+  font-family: Cambria, Georgia, serif;
+}
+
+.about-container p {
+  color: #555;
+  line-height: 1.7;
+  margin-bottom: 12px;
+}
+
+.auth-container {
+  display: flex;
+  justify-content: center;
+  padding: 30px 20px;
+}
+
+.auth-box {
+  background: white;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  width: 100%;
+  max-width: 420px;
+}
+
+.feedback-box {
+  max-width: 520px;
+}
+
+.feedback-box .django-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.feedback-box .form-group {
+  width: 100%;
+}
+
+.feedback-box .btn-submit {
+  width: 100%;
+}
+
+.auth-box h1 {
+  color: #333;
+  text-align: center;
+  margin-bottom: 8px;
+  font-size: 26px;
+}
+
+.subtitle {
+  text-align: center;
+  color: #888;
+  font-size: 13px;
+  margin-bottom: 25px;
+}
+
+.auth-link {
+  text-align: center;
+  margin-top: 20px;
+  color: #666;
+  font-size: 14px;
+}
+
+.auth-link a {
+  color: #47c8ff;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.auth-link a:hover { text-decoration: underline; }
+
+.django-form {
+  margin-top: 20px;
+}
+
+.form-group {
+  margin-bottom: 18px;
+}
+
+.form-group label {
+  display: block;
+  color: #333;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+.required-mark {
+  color: #f44336;
+  margin-left: 3px;
+}
+
+.django-form input[type="text"],
+.django-form input[type="email"],
+.django-form input[type="password"],
+.django-form textarea,
+.django-form select {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 15px;
+  font-family: inherit;
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.django-form input:required,
+.django-form textarea:required {
+  border-left: 4px solid #47c8ff;
+}
+
+.django-form input:optional,
+.django-form textarea:optional {
+  border-left: 4px solid #ddd;
+}
+
+.django-form input:not(:placeholder-shown):valid,
+.django-form textarea:not(:placeholder-shown):valid {
+  border-color: #28a745;
+  box-shadow: 0 0 0 3px rgba(40,167,69,0.15);
+}
+
+.django-form input:not(:placeholder-shown):invalid,
+.django-form textarea:not(:placeholder-shown):invalid {
+  border-color: #f44336;
+  box-shadow: 0 0 0 3px rgba(244,67,54,0.15);
+}
+
+.django-form input:focus,
+.django-form textarea:focus {
+  border-color: #47c8ff;
+  box-shadow: 0 0 0 3px rgba(71,200,255,0.2);
+}
+
+.field-error {
+  color: #f44336;
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.field-help {
+  color: #999;
+  font-size: 11px;
+  margin-top: 4px;
+}
+
+.btn-submit {
+  width: 100%;
+  padding: 12px;
+  background: #47c8ff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: background 0.2s;
+}
+
+.btn-submit:hover { background: #2ba8d9; }
+
+.not-found-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 20px;
+  min-height: calc(100vh - 80px);
+}
+
+.not-found-box {
+  background: white;
+  border-radius: 16px;
+  padding: 50px 40px;
+  text-align: center;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.12);
+  max-width: 520px;
+  width: 100%;
+}
+
+.not-found-code {
+  font-size: 96px;
+  font-weight: 900;
+  color: #47c8ff;
+  line-height: 1;
+  margin-bottom: 10px;
+  font-family: Cambria, Georgia, serif;
+}
+
+.not-found-title {
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.not-found-text {
+  color: #888;
+  font-size: 15px;
+  margin-bottom: 24px;
+}
+
+.not-found-img {
+  width: 100%;
+  max-width: 320px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+  margin-bottom: 28px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.btn-home {
+  display: inline-block;
+  padding: 12px 32px;
+  background: #47c8ff;
+  color: white;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.btn-home:hover { background: #2ba8d9; }

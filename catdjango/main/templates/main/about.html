@@ -1,0 +1,19 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}О разработчике{% endblock %}
+
+{% block content %}
+<div class="about-container">
+  <h1>О разработчике</h1>
+  <p>Этот сайт создан как учебный проект. Он посвящён котикам — самым прекрасным существам на планете.</p>
+  <p>Как разрабатывался сайт:</p>
+  <div class="cat-gallery">
+      <img src="{% static 'main/cat_programmer/cat_programmer1.jpg' %}" alt="">
+      <img src="{% static 'main/cat_programmer/cat_programmer2.jpg' %}" alt="">
+      <img src="{% static 'main/cat_programmer/cat_programmer3.jpg' %}" alt="">
+      <img src="{% static 'main/cat_programmer/cat_programmer4.jpg' %}" alt="">
+    <img src="{% static 'main/cat_programmer/cat_programmer5.jpg' %}" alt="">
+  </div>
+</div>
+{% endblock %}

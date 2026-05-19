@@ -1,0 +1,439 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}Породы кошек{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Породы кошек</h1>
+
+<div class="breeds-grid">
+
+  <div class="breed-card" data-breed="Бенгальская">
+    <img src="{% static 'main/breeds/bengal1.jpg' %}" alt="Бенгальская">
+    <img src="{% static 'main/breeds/bengal2.jpg' %}" alt="Бенгальская">
+    <h3>Бенгальская</h3>
+    <p>Активная, игривая порода с леопардовым окрасом. Любит воду и очень умная.</p>
+    <div class="like-bar">
+      <button class="btn-like" data-value="1">👍 <span class="like-count">0</span></button>
+      <button class="btn-dislike" data-value="-1">👎 <span class="dislike-count">0</span></button>
+    </div>
+  </div>
+
+  <div class="breed-card" data-breed="Персидская">
+    <img src="{% static 'main/breeds/persian1.jpg' %}" alt="Персидская">
+    <img src="{% static 'main/breeds/persian2.jpg' %}" alt="Персидская">
+    <h3>Персидская</h3>
+    <p>Спокойная и ласковая порода с длинной шерстью. Идеальный домашний питомец.</p>
+    <div class="like-bar">
+      <button class="btn-like" data-value="1">👍 <span class="like-count">0</span></button>
+      <button class="btn-dislike" data-value="-1">👎 <span class="dislike-count">0</span></button>
+    </div>
+  </div>
+
+  <div class="breed-card" data-breed="Мейн-кун">
+    <img src="{% static 'main/breeds/mein-kun1.jpg' %}" alt="Мейн-кун">
+    <img src="{% static 'main/breeds/mein-kun4.jpg' %}" alt="Мейн-кун">
+    <h3>Мейн-кун</h3>
+    <p>Крупная порода с кисточками на ушах. Очень дружелюбная и собакоподобная.</p>
+    <div class="like-bar">
+      <button class="btn-like" data-value="1">👍 <span class="like-count">0</span></button>
+      <button class="btn-dislike" data-value="-1">👎 <span class="dislike-count">0</span></button>
+    </div>
+  </div>
+
+  <div class="breed-card" data-breed="Шотландская вислоухая">
+    <img src="{% static 'main/breeds/scottish-fold1.jpg' %}" alt="Шотландская вислоухая">
+    <img src="{% static 'main/breeds/scottish-fold2.jpg' %}" alt="Шотландская вислоухая">
+    <h3>Шотландская вислоухая</h3>
+    <p>Узнаваема по загнутым ушам. Спокойная и преданная порода.</p>
+    <div class="like-bar">
+      <button class="btn-like" data-value="1">👍 <span class="like-count">0</span></button>
+      <button class="btn-dislike" data-value="-1">👎 <span class="dislike-count">0</span></button>
+    </div>
+  </div>
+
+  <div class="breed-card" data-breed="Сиамская">
+    <img src="{% static 'main/breeds/siamese1.jpg' %}" alt="Сиамская">
+    <img src="{% static 'main/breeds/siamese2.jpg' %}" alt="Сиамская">
+    <h3>Сиамская</h3>
+    <p>Элегантная и голосистая порода. Очень привязана к хозяину.</p>
+    <div class="like-bar">
+      <button class="btn-like" data-value="1">👍 <span class="like-count">0</span></button>
+      <button class="btn-dislike" data-value="-1">👎 <span class="dislike-count">0</span></button>
+    </div>
+  </div>
+
+  <div class="breed-card" data-breed="Рэгдолл">
+    <img src="{% static 'main/breeds/ragdoll1.jpg' %}" alt="Рэгдолл">
+    <img src="{% static 'main/breeds/ragdoll3.jpg' %}" alt="Рэгдолл">
+    <h3>Рэгдолл</h3>
+    <p>Большая мягкая кошка, которая расслабляется на руках как тряпочка.</p>
+    <div class="like-bar">
+      <button class="btn-like" data-value="1">👍 <span class="like-count">0</span></button>
+      <button class="btn-dislike" data-value="-1">👎 <span class="dislike-count">0</span></button>
+    </div>
+  </div>
+
+</div>
+
+<!-- Секция комментариев -->
+<section class="comments-section">
+  <h2>💬 Комментарии</h2>
+
+  {% if user.is_authenticated %}
+  <form id="comment-form" class="comment-form">
+    {% csrf_token %}
+    <div class="comment-form-row">
+      <select id="comment-breed" name="breed" required>
+        <option value="">— Выберите породу —</option>
+        <option value="Бенгальская">Бенгальская</option>
+        <option value="Персидская">Персидская</option>
+        <option value="Мейн-кун">Мейн-кун</option>
+        <option value="Шотландская вислоухая">Шотландская вислоухая</option>
+        <option value="Сиамская">Сиамская</option>
+        <option value="Рэгдолл">Рэгдолл</option>
+      </select>
+      <textarea id="comment-text" name="text" placeholder="Напишите комментарий..." maxlength="500" required rows="3"></textarea>
+    </div>
+    <div class="comment-form-footer">
+      <span id="char-counter">0 / 500</span>
+      <button type="submit" class="btn-submit-comment">Отправить</button>
+    </div>
+    <p id="comment-error" class="comment-error" style="display:none;"></p>
+  </form>
+  {% else %}
+  <p class="comment-login-notice">
+    <a href="{% url 'login' %}">Войдите</a>, чтобы оставить комментарий или поставить лайк.
+  </p>
+  {% endif %}
+
+  <div id="comments-filter" class="comments-filter">
+    <label>Фильтр по породе:</label>
+    <select id="filter-breed">
+      <option value="">Все породы</option>
+      <option value="Бенгальская">Бенгальская</option>
+      <option value="Персидская">Персидская</option>
+      <option value="Мейн-кун">Мейн-кун</option>
+      <option value="Шотландская вислоухая">Шотландская вислоухая</option>
+      <option value="Сиамская">Сиамская</option>
+      <option value="Рэгдолл">Рэгдолл</option>
+    </select>
+    <span id="poll-indicator" class="poll-indicator" title="Автообновление активно">🔄</span>
+  </div>
+
+  <div id="comments-list" class="comments-list">
+    <p class="no-comments">Комментариев пока нет. Будьте первым!</p>
+  </div>
+</section>
+
+<style>
+.like-bar {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+  justify-content: center;
+}
+.like-bar button {
+  border: 2px solid #ddd;
+  background: #fff;
+  border-radius: 20px;
+  padding: 6px 14px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: all 0.2s;
+}
+.like-bar button:hover { border-color: #888; }
+.like-bar button.active-like  { background: #d4edda; border-color: #28a745; }
+.like-bar button.active-dislike { background: #f8d7da; border-color: #dc3545; }
+
+.comments-section {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 0 16px;
+}
+.comments-section h2 { margin-bottom: 20px; }
+
+.comment-form {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+.comment-form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.comment-form select,
+.comment-form textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  resize: vertical;
+  box-sizing: border-box;
+}
+.comment-form-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+}
+#char-counter { color: #888; font-size: 0.85rem; }
+.btn-submit-comment {
+  background: #4a90d9;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 20px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: background 0.2s;
+}
+.btn-submit-comment:hover { background: #357abd; }
+.comment-error { color: #dc3545; font-size: 0.9rem; margin-top: 6px; }
+
+.comment-login-notice {
+  background: #f0f4ff;
+  border: 1px solid #c8d8f8;
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin-bottom: 20px;
+  color: #555;
+}
+.comment-login-notice a { color: #4a90d9; }
+
+.comments-filter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  font-size: 0.9rem;
+  color: #555;
+}
+.comments-filter select {
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+.poll-indicator {
+  display: inline-block;
+  animation: spin 3s linear infinite;
+  cursor: default;
+}
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+.comments-list { display: flex; flex-direction: column; gap: 12px; }
+.comment-item {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 14px 16px;
+  animation: fadeIn 0.3s ease;
+}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: #888;
+  margin-bottom: 6px;
+}
+.comment-username { font-weight: 600; color: #333; }
+.comment-breed-tag {
+  background: #e8f0fe;
+  color: #4a90d9;
+  border-radius: 12px;
+  padding: 2px 10px;
+  font-size: 0.8rem;
+}
+.comment-text { font-size: 0.95rem; color: #333; word-break: break-word; }
+.no-comments { color: #888; font-style: italic; text-align: center; padding: 20px 0; }
+</style>
+
+<script>
+(function () {
+  const CSRF = document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+  const BREEDS = ['Бенгальская','Персидская','Мейн-кун','Шотландская вислоухая','Сиамская','Рэгдолл'];
+
+  // ── Утилита: AJAX-запрос ─────────────────────────────────────────────────
+  async function post(url, body) {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CSRFToken': CSRF },
+      body: JSON.stringify(body),
+    });
+    return res.json();
+  }
+
+  async function get(url) {
+    const res = await fetch(url);
+    return res.json();
+  }
+
+  // ── Лайки ────────────────────────────────────────────────────────────────
+  let likesData = {};
+
+  function applyLikes(data) {
+    likesData = data;
+    document.querySelectorAll('.breed-card').forEach(card => {
+      const breed = card.dataset.breed;
+      if (!data[breed]) return;
+      const { likes, dislikes, user_vote } = data[breed];
+      card.querySelector('.like-count').textContent = likes;
+      card.querySelector('.dislike-count').textContent = dislikes;
+      card.querySelector('.btn-like').classList.toggle('active-like', user_vote === 1);
+      card.querySelector('.btn-dislike').classList.toggle('active-dislike', user_vote === -1);
+    });
+  }
+
+  async function fetchLikes() {
+    const data = await get('/ajax/likes/?breeds=' + encodeURIComponent(BREEDS.join(',')));
+    if (data.ok) applyLikes(data.data);
+  }
+
+  document.querySelectorAll('.breed-card').forEach(card => {
+    const breed = card.dataset.breed;
+    card.querySelector('.btn-like').addEventListener('click', async () => {
+      const data = await post('/ajax/like/toggle/', { breed, value: 1 });
+      if (data.ok) {
+        applyLikes({ ...likesData, [breed]: { likes: data.likes, dislikes: data.dislikes, user_vote: data.user_vote } });
+      } else {
+        alert(data.error || 'Ошибка. Войдите в систему.');
+      }
+    });
+    card.querySelector('.btn-dislike').addEventListener('click', async () => {
+      const data = await post('/ajax/like/toggle/', { breed, value: -1 });
+      if (data.ok) {
+        applyLikes({ ...likesData, [breed]: { likes: data.likes, dislikes: data.dislikes, user_vote: data.user_vote } });
+      } else {
+        alert(data.error || 'Ошибка. Войдите в систему.');
+      }
+    });
+  });
+
+  // ── Комментарии ──────────────────────────────────────────────────────────
+  let maxCommentId = 0;
+  let filterBreed = '';
+  let allComments = [];
+
+  function renderComments() {
+    const list = document.getElementById('comments-list');
+    const filtered = filterBreed
+      ? allComments.filter(c => c.breed === filterBreed)
+      : allComments;
+
+    if (filtered.length === 0) {
+      list.innerHTML = '<p class="no-comments">Комментариев пока нет. Будьте первым!</p>';
+      return;
+    }
+
+    const sorted = [...filtered].sort((a, b) => b.id - a.id);
+    list.innerHTML = sorted.map(c => `
+      <div class="comment-item">
+        <div class="comment-header">
+          <span>
+            <span class="comment-username">${escHtml(c.username)}</span>
+            &nbsp;
+            <span class="comment-breed-tag">${escHtml(c.breed)}</span>
+          </span>
+          <span>${escHtml(c.created_at)}</span>
+        </div>
+        <div class="comment-text">${escHtml(c.text)}</div>
+      </div>
+    `).join('');
+  }
+
+  function escHtml(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  async function fetchAllComments() {
+    const data = await get('/ajax/comments/');
+    if (data.ok) {
+      allComments = data.comments;
+      if (allComments.length > 0) {
+        maxCommentId = Math.max(...allComments.map(c => c.id));
+      }
+      renderComments();
+    }
+  }
+
+  async function fetchNewComments() {
+    const data = await get('/ajax/comments/?since_id=' + maxCommentId);
+    if (data.ok && data.comments.length > 0) {
+      allComments = allComments.concat(data.comments);
+      maxCommentId = Math.max(...allComments.map(c => c.id));
+      renderComments();
+    }
+  }
+
+  const filterSelect = document.getElementById('filter-breed');
+  if (filterSelect) {
+    filterSelect.addEventListener('change', () => {
+      filterBreed = filterSelect.value;
+      renderComments();
+    });
+  }
+
+  const commentForm = document.getElementById('comment-form');
+  if (commentForm) {
+    const textarea = document.getElementById('comment-text');
+    const counter = document.getElementById('char-counter');
+    const errEl = document.getElementById('comment-error');
+
+    textarea.addEventListener('input', () => {
+      counter.textContent = textarea.value.length + ' / 500';
+    });
+
+    commentForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errEl.style.display = 'none';
+      const breed = document.getElementById('comment-breed').value.trim();
+      const text = textarea.value.trim();
+
+      if (!breed || !text) {
+        errEl.textContent = 'Выберите породу и введите текст.';
+        errEl.style.display = 'block';
+        return;
+      }
+
+      const btn = commentForm.querySelector('.btn-submit-comment');
+      btn.disabled = true;
+
+      const data = await post('/ajax/comment/add/', { breed, text });
+      btn.disabled = false;
+
+      if (data.ok) {
+        allComments.push(data.comment);
+        maxCommentId = Math.max(maxCommentId, data.comment.id);
+        renderComments();
+        textarea.value = '';
+        counter.textContent = '0 / 500';
+        document.getElementById('comment-breed').value = '';
+      } else {
+        errEl.textContent = data.error || 'Ошибка отправки.';
+        errEl.style.display = 'block';
+      }
+    });
+  }
+
+  // ── Polling: обновление каждые 3 секунды ─────────────────────────────────
+  fetchAllComments();
+  fetchLikes();
+
+  setInterval(() => {
+    fetchNewComments();
+    fetchLikes();
+  }, 3000);
+
+})();
+</script>
+{% endblock %}
