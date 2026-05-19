@@ -1,7 +1,7 @@
 from django.test import TestCase, Client
 from django.contrib.auth.models import User
 from django.urls import reverse
-from .models import Post, PostLike, PostComment, Comment, Like, Feedback
+from .models import Post, PostComment, Comment, Like, Feedback
 import json
 
 

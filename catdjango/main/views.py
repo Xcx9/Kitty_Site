@@ -1,14 +1,13 @@
 import json
 import requests
 from django.shortcuts import render, redirect
-from django.contrib.auth import login, logout, authenticate
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth import login, logout
 from django.contrib import messages
 from django.conf import settings
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST, require_GET
 from .forms import RegisterForm, LoginForm, FeedbackForm
-from .models import Feedback, Comment, Like, Post, PostLike, PostComment
+from .models import Comment, Like, Post, PostLike, PostComment
 
 
 def page_not_found_view(request, *args, **kwargs):
@@ -304,7 +303,7 @@ def ajax_get_post_comments(request):
     return JsonResponse({'ok': True, 'comments': comments})
 
 
-# AJAX: Комментарии к породам 
+# AJAX: Комментарии к породам
 
 @require_POST
 def ajax_add_comment(request):

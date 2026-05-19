@@ -7,7 +7,7 @@ from channels.auth import AuthMiddlewareStack
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'catdjango.settings')
 django.setup()
 
-import main.routing
+import main.routing  # noqa: E402
 
 application = ProtocolTypeRouter({
     'http': get_asgi_application(),
