@@ -206,7 +206,6 @@ jobs:
           command_timeout: 10m
           script: |
             set -e
-            cd ~/Kitty_Site
             docker compose pull
             docker compose up -d
             docker compose exec web python manage.py migrate --noinput
