@@ -65,3 +65,15 @@ volumes:
   postgres_data:
   static_volume:
   media_volume:
+
+deploy:
+  needs: docker
+  runs-on: ubuntu-latest
+
+  steps:
+    - name: Deploy
+      run: |
+        ssh user@server "
+          docker pull username/catdjango:latest &&
+          docker compose up -d
+        "
